@@ -1,0 +1,20 @@
+#include "FreeRTOS.h"
+#include "task.h"
+#include "basic_io.h"
+
+void vTask(void *pvParameters);
+const char * Task1String="Task 1 is Running\n";
+const char * Task2String="Task 2 is Running\n";
+int main(){
+	xTaskCreate(vTask,"Task 1",240,(void*)(Task1String),1,NULL);
+	xTaskCreate(vTask,"Task 2",240,(void*)(Task2String),2,NULL);
+	vTaskStartScheduler();
+	while(1){}
+	}
+void vTask(void *pvParameters){
+	const char *pcTask=(char*)pvParameters;
+	while(1){
+		vPrintString(pcTask);
+		vTaskDelay(pdMS_TO_TICKS(500));
+	}
+}
