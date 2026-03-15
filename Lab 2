@@ -1,0 +1,90 @@
+#include "FreeRTOS.h"
+#include "task.h"
+#include "basic_io.h"
+
+void vTask(void *pvParameters);
+const  char * task1String = "Ana task 1";
+const char * task2String  = "Ana task 2";
+struct pxStruct{
+	char *StringData; 
+	int DelayTime;
+};
+
+TaskHandle_t Task1Handel;
+TaskHandle_t Task2Handel;
+
+struct pxStruct Task1Instance={"Task 1 running \n",250};
+struct pxStruct Task2Instance={"Task 2 running \n",500};
+
+int LED1=0;
+int LED2=0;
+int counter1=0;
+int counter2=0;
+
+	
+void Task1(void *pvParameters)
+{
+	BaseType_t TaskPriority = uxTaskBasePriorityGet(NULL);
+	while(1){
+		//LED1=1;
+		//for(int i=0;i<10000;i++);
+		//LED1=0;
+		//counter1++;
+		//vTaskDelay(pdMS_TO_TICKS(100));
+		
+		vPrintString("task 1 \n");
+		vPrintString("task 2 priority \n");
+		vTaskPrioritySet(Task2Handel,TaskPriority+1);
+	}
+}
+void Task2(void *pvParameters)
+{
+	TickType_t LastWakeTime= xTaskGetTickCount();
+	BaseType_t TaskPriority = uxTaskBasePriorityGet(NULL);
+	while(1){
+		//LED2=1;
+		//for(int i=0;i<10000;i++);
+		//LED2=0;
+		//counter2++;
+		//vTaskDelayUntil(&LastWakeTime,pdMS_TO_TICKS(100));
+		
+		//vPrintString("task 2 delete task 1 \n");
+		//vTaskDelay(pdMS_TO_TICKS(1000));
+		//vTaskDelete(Task1Handel);
+		//vTaskDelay(pdMS_TO_TICKS(1000));
+		//vTaskDelete(NULL);
+		vPrintString("task 2 \n");
+		vPrintString("my priority \n");
+		vTaskPrioritySet(NULL,TaskPriority+-2);
+	}
+}
+
+
+
+int main(){
+	xTaskCreate(Task1, "Task 1", 240, NULL, 2, NULL);
+	xTaskCreate(Task2, "Task 2", 240,NULL, 1, &Task2Handel);
+
+	
+	
+	vTaskStartScheduler();
+	
+	while(1){};
+}
+
+
+
+
+
+
+
+void vTask(void *pvParameters)
+{
+	//const char * pcTask = (char*)pvParameters;
+	
+	while(1){
+		vPrintString(((struct pxStruct*)pvParameters) -> StringData);
+		vTaskDelay(pdMS_TO_TICKS(((struct pxStruct*)pvParameters) -> DelayTime));
+
+	}
+}
